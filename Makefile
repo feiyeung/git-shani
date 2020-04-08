@@ -1035,6 +1035,7 @@ LIB_OBJS += ws.o
 LIB_OBJS += wt-status.o
 LIB_OBJS += xdiff-interface.o
 LIB_OBJS += zlib.o
+LIB_OBJS += sha1_x64.o
 
 BUILTIN_OBJS += builtin/add.o
 BUILTIN_OBJS += builtin/am.o
@@ -2379,7 +2380,10 @@ endif
 
 ASM_SRC := $(wildcard $(OBJECTS:o=S))
 ASM_OBJ := $(ASM_SRC:S=o)
-C_OBJ := $(filter-out $(ASM_OBJ),$(OBJECTS))
+YASM_SRC := $(wildcard $(OBJECTS:o=s))
+YASM_OBJ := $(YASM_SRC:s=o)
+ALL_ASM_OBJ := $(ASM_OBJ) $(YASM_OBJ)
+C_OBJ := $(filter-out $(ALL_ASM_OBJ),$(OBJECTS))
 
 .SUFFIXES:
 
@@ -2387,6 +2391,8 @@ $(C_OBJ): %.o: %.c GIT-CFLAGS $(missing_dep_dirs)
 	$(QUIET_CC)$(CC) -o $*.o -c $(dep_args) $(ALL_CFLAGS) $(EXTRA_CPPFLAGS) $<
 $(ASM_OBJ): %.o: %.S GIT-CFLAGS $(missing_dep_dirs)
 	$(QUIET_CC)$(CC) -o $*.o -c $(dep_args) $(ALL_CFLAGS) $(EXTRA_CPPFLAGS) $<
+$(YASM_OBJ): %.o: %.s $(missing_dep_dirs)
+	$(QUIET_CC)yasm $< -f elf64 -X gnu -g dwarf2 -o $@
 
 %.s: %.c GIT-CFLAGS FORCE
 	$(QUIET_CC)$(CC) -o $@ -S $(ALL_CFLAGS) $(EXTRA_CPPFLAGS) $<
