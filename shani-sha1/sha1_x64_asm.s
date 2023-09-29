@@ -87,32 +87,6 @@ endstruc
 %define SHUF_MASK	xmm7
 section .text
 
-; ;global shani_SHA1_Init:function
-; align 32
-; ;shani_SHA1_Init:
-; 	mov eax, 0x67452301
-; 	mov [DIGEST_PTR + 0], eax
-; 	mov eax, 0xEFCDAB89
-; 	mov [DIGEST_PTR + 4], eax
-; 	mov eax, 0x98BADCFE
-; 	mov [DIGEST_PTR + 8], eax
-; 	mov eax, 0x10325476
-; 	mov [DIGEST_PTR + 12], eax
-; 	mov eax, 0xC3D2E1F0
-; 	mov [DIGEST_PTR + 16], eax
-; 	xor eax, eax
-; 	mov [DIGEST_PTR + 20], eax  ; set length to zero
-; 	mov [DIGEST_PTR + 24], rax  ; set total length to zero
-; 	ret
-
-
-;global shani_SHA1_Update:function
-;align 32
-;shani_SHA1_Update:
-    ; arg 1: pointer to digest
-    ; arg 2: pointer to input data
-    ; arg 3: length in bytes
-        
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; void sha1_update(uint32_t *digest, const void *data, uint32_t numBlocks);
