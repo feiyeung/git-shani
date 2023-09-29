@@ -1917,6 +1917,11 @@ ifdef PPC_SHA1
 $(error the PPC_SHA1 flag has been removed along with the PowerPC-specific SHA-1 implementation.)
 endif
 
+ifdef SHA1_SHANI
+	LIB_OBJS += shani-sha1/sha1_x64.o
+	LIB_OBJS += shani-sha1/sha1_x64_asm.o
+	BASIC_CFLAGS += -DSHA1_SHANI
+else
 ifdef OPENSSL_SHA1
 	EXTLIBS += $(LIB_4_CRYPTO)
 	BASIC_CFLAGS += -DSHA1_OPENSSL
@@ -1953,6 +1958,7 @@ endif
 		-DSHA1DC_INIT_SAFE_HASH_DEFAULT=0 \
 		-DSHA1DC_CUSTOM_INCLUDE_SHA1_C="\"cache.h\"" \
 		-DSHA1DC_CUSTOM_INCLUDE_UBC_CHECK_C="\"git-compat-util.h\""
+endif
 endif
 endif
 endif
@@ -2710,6 +2716,20 @@ else
 missing_compdb_dir =
 compdb_args =
 endif
+
+$(info $$OBJECTS is [${OBJECTS}])
+
+### for SHA-NI 
+YASM_SRC := $(wildcard $(OBJECTS:o=s))
+YASM_OBJ := $(YASM_SRC:s=o)
+OBJECTS := $(filter-out $(YASM_OBJ),$(OBJECTS))
+
+$(info $$YASM_SRC is [${YASM_SRC}])
+$(info $$YASM_OBJ is [${YASM_OBJ}])
+$(info $$OBJECTS is [${OBJECTS}])
+
+$(YASM_OBJ): %.o: %.s $(missing_dep_dirs)
+	$(QUIET_CC)yasm $< -f elf64 -X gnu -g dwarf2 -o $@
 
 $(OBJECTS): %.o: %.c GIT-CFLAGS $(missing_dep_dirs) $(missing_compdb_dir)
 	$(QUIET_CC)$(CC) -o $*.o -c $(dep_args) $(compdb_args) $(ALL_CFLAGS) $(EXTRA_CPPFLAGS) $<

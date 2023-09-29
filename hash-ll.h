@@ -1,7 +1,9 @@
 #ifndef HASH_LL_H
 #define HASH_LL_H
 
-#if defined(SHA1_APPLE)
+#if defined(SHA1_SHANI)
+#include "shani-sha1/sha1_x64.h"
+#elif defined(SHA1_APPLE)
 #include <CommonCrypto/CommonDigest.h>
 #elif defined(SHA1_OPENSSL)
 #include <openssl/sha.h>
