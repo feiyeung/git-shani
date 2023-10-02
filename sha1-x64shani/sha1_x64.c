@@ -1,7 +1,6 @@
-/* this is only to get definitions for memcpy(), ntohl() and htonl() */
 #include "../git-compat-util.h"
 #include "sha1_x64.h"
-
+#include <byteswap.h>
 
 // static inline void shani_SHA1_Init(shani_SHA_CTX *c);
 
@@ -44,25 +43,6 @@ void shani_SHA1_Update(shani_SHA_CTX *c, const void *data, unsigned long len)
             c->len = 0;
         }
     }
-    return 1;
-}
-
-
-/*
- * Encodes input (u_int32_t) into output (unsigned char). Assumes len is
- * a multiple of 4. This is not compatible with memcpy().
- */
-void
-Encode(unsigned char *output, u_int32_t *input, unsigned int len)
-{
-	unsigned int i, j;
-
-	for (i = 0, j = 0; j < len; i++, j += 4) {
-		output[j + 3] = input[i] & 0xff;
-		output[j + 2] = (input[i] >> 8) & 0xff;
-		output[j + 1] = (input[i] >> 16) & 0xff;
-		output[j] = (input[i] >> 24) & 0xff;
-	}
 }
 
 void shani_SHA1_Final(unsigned char *md, shani_SHA_CTX *c)
@@ -83,6 +63,9 @@ void shani_SHA1_Final(unsigned char *md, shani_SHA_CTX *c)
     sha1_update(c->h, c->msgbuf, 1);
     c->len = 0;    
 
-    Encode(md, c->h, 20);
-    return 1;
+    // flip endianness
+    int i;
+    for (i = 0; i < 20; i += 4) {
+        *(uint32_t *)(md + i) = __bswap_32(c->h[i / 4]);
+    }
 }

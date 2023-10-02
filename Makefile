@@ -1918,8 +1918,8 @@ $(error the PPC_SHA1 flag has been removed along with the PowerPC-specific SHA-1
 endif
 
 ifdef SHA1_SHANI
-	LIB_OBJS += shani-sha1/sha1_x64.o
-	LIB_OBJS += shani-sha1/sha1_x64_asm.o
+	LIB_OBJS += sha1-x64shani/sha1_x64.o
+	LIB_OBJS += sha1-x64shani/sha1_x64_asm.o
 	BASIC_CFLAGS += -DSHA1_SHANI
 else
 ifdef OPENSSL_SHA1
@@ -1964,6 +1964,11 @@ endif
 endif
 endif
 
+ifdef SHA256_SHANI
+	LIB_OBJS += sha256-x64shani/sha256_x64.o
+	LIB_OBJS += sha256-x64shani/intel_sha_extensions_sha256_assembly.o
+	BASIC_CFLAGS += -DSHA256_SHANI
+else
 ifdef OPENSSL_SHA256
 	EXTLIBS += $(LIB_4_CRYPTO)
 	BASIC_CFLAGS += -DSHA256_OPENSSL
@@ -1981,6 +1986,9 @@ else
 endif
 endif
 endif
+endif
+
+$(info $$LIB_OBJS is [${LIB_OBJS}])
 
 ifdef SHA1_MAX_BLOCK_SIZE
 	LIB_OBJS += compat/sha1-chunked.o
