@@ -1917,6 +1917,11 @@ ifdef PPC_SHA1
 $(error the PPC_SHA1 flag has been removed along with the PowerPC-specific SHA-1 implementation.)
 endif
 
+ifdef SHA1_SHANI
+	LIB_OBJS += sha1-x64shani/sha1_x64.o
+	LIB_OBJS += sha1-x64shani/intel_sha_extensions_sha1_assembly.o
+	BASIC_CFLAGS += -DSHA1_SHANI
+else
 ifdef OPENSSL_SHA1
 	EXTLIBS += $(LIB_4_CRYPTO)
 	BASIC_CFLAGS += -DSHA1_OPENSSL
@@ -1957,7 +1962,13 @@ endif
 endif
 endif
 endif
+endif
 
+ifdef SHA256_SHANI
+	LIB_OBJS += sha256-x64shani/sha256_x64.o
+	LIB_OBJS += sha256-x64shani/intel_sha_extensions_sha256_assembly.o
+	BASIC_CFLAGS += -DSHA256_SHANI
+else
 ifdef OPENSSL_SHA256
 	EXTLIBS += $(LIB_4_CRYPTO)
 	BASIC_CFLAGS += -DSHA256_OPENSSL
@@ -1975,6 +1986,9 @@ else
 endif
 endif
 endif
+endif
+
+$(info $$LIB_OBJS is [${LIB_OBJS}])
 
 ifdef SHA1_MAX_BLOCK_SIZE
 	LIB_OBJS += compat/sha1-chunked.o
@@ -2710,6 +2724,20 @@ else
 missing_compdb_dir =
 compdb_args =
 endif
+
+$(info $$OBJECTS is [${OBJECTS}])
+
+### for SHA-NI 
+YASM_SRC := $(wildcard $(OBJECTS:o=asm))
+YASM_OBJ := $(YASM_SRC:asm=o)
+OBJECTS := $(filter-out $(YASM_OBJ),$(OBJECTS))
+
+$(info $$YASM_SRC is [${YASM_SRC}])
+$(info $$YASM_OBJ is [${YASM_OBJ}])
+$(info $$OBJECTS is [${OBJECTS}])
+
+$(YASM_OBJ): %.o: %.asm $(missing_dep_dirs)
+	$(QUIET_CC)yasm $< -f elf64 -X gnu -g dwarf2 -o $@
 
 $(OBJECTS): %.o: %.c GIT-CFLAGS $(missing_dep_dirs) $(missing_compdb_dir)
 	$(QUIET_CC)$(CC) -o $*.o -c $(dep_args) $(compdb_args) $(ALL_CFLAGS) $(EXTRA_CPPFLAGS) $<

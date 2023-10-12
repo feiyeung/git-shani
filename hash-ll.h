@@ -1,7 +1,9 @@
 #ifndef HASH_LL_H
 #define HASH_LL_H
 
-#if defined(SHA1_APPLE)
+#if defined(SHA1_SHANI)
+#include "sha1-x64shani/sha1_x64.h"
+#elif defined(SHA1_APPLE)
 #include <CommonCrypto/CommonDigest.h>
 #elif defined(SHA1_OPENSSL)
 #include <openssl/sha.h>
@@ -11,7 +13,9 @@
 #include "block-sha1/sha1.h"
 #endif
 
-#if defined(SHA256_NETTLE)
+#if defined(SHA256_SHANI)
+#include "sha256-x64shani/sha256_x64.h"
+#elif defined(SHA256_NETTLE)
 #include "sha256/nettle.h"
 #elif defined(SHA256_GCRYPT)
 #define SHA256_NEEDS_CLONE_HELPER
