@@ -2,6 +2,8 @@
 #include "sha256_x64.h"
 #include <byteswap.h>
 
+static int shani = -1;
+
 void shani_SHA256_Init(shani_SHA256_CTX *ctx)
 {
 	ctx->total_len = 0;
@@ -14,6 +16,13 @@ void shani_SHA256_Init(shani_SHA256_CTX *ctx)
 	ctx->h[5] = 0x9b05688cul;
 	ctx->h[6] = 0x1f83d9abul;
 	ctx->h[7] = 0x5be0cd19ul;
+
+    if (shani != 1) {
+        shani = 1;
+        printf("set shani to 1\n");
+    } else {
+        printf("shani is 1 already\n");
+    }
 }
 
 void sha256_update(uint32_t *digest, const void *data, uint32_t numBlocks);

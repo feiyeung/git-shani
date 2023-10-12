@@ -1919,7 +1919,7 @@ endif
 
 ifdef SHA1_SHANI
 	LIB_OBJS += sha1-x64shani/sha1_x64.o
-	LIB_OBJS += sha1-x64shani/sha1_x64_asm.o
+	LIB_OBJS += sha1-x64shani/intel_sha_extensions_sha1_assembly.o
 	BASIC_CFLAGS += -DSHA1_SHANI
 else
 ifdef OPENSSL_SHA1
@@ -2728,15 +2728,15 @@ endif
 $(info $$OBJECTS is [${OBJECTS}])
 
 ### for SHA-NI 
-YASM_SRC := $(wildcard $(OBJECTS:o=s))
-YASM_OBJ := $(YASM_SRC:s=o)
+YASM_SRC := $(wildcard $(OBJECTS:o=asm))
+YASM_OBJ := $(YASM_SRC:asm=o)
 OBJECTS := $(filter-out $(YASM_OBJ),$(OBJECTS))
 
 $(info $$YASM_SRC is [${YASM_SRC}])
 $(info $$YASM_OBJ is [${YASM_OBJ}])
 $(info $$OBJECTS is [${OBJECTS}])
 
-$(YASM_OBJ): %.o: %.s $(missing_dep_dirs)
+$(YASM_OBJ): %.o: %.asm $(missing_dep_dirs)
 	$(QUIET_CC)yasm $< -f elf64 -X gnu -g dwarf2 -o $@
 
 $(OBJECTS): %.o: %.c GIT-CFLAGS $(missing_dep_dirs) $(missing_compdb_dir)
